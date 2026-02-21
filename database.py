@@ -3,7 +3,8 @@ import datetime
 from typing import List, Optional
 from sqlmodel import Field, Session, SQLModel, create_engine, Relationship
 from cryptography.fernet import Fernet
-
+from dotenv import load_dotenv
+load_dotenv()
 def get_or_create_encryption_key():
     key_file = 'secret.key'
     if os.path.exists(key_file):
@@ -42,7 +43,7 @@ class User(SQLModel, table=True):
     
     interviews: List[Interview] = Relationship(back_populates="user")
 
-DATABASE_URL = "postgresql://postgres:test123@localhost/interview_prep"
+DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 
 def create_db_and_tables():
