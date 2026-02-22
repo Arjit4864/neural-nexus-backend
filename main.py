@@ -164,8 +164,9 @@ async def analyze_answer(request: AnswerAnalysisRequest):
     1.  **Clarity and Structure:** Was the answer clear and well-structured?
     2.  **Content and Relevance:** Did the answer directly address the question?
     3.  **Delivery and Confidence:** Identify potential filler words or lack of confidence.
-
+    You must provide your feedback in exactly one single paragraph of no more than 100 words.
     Format your response in Markdown.
+    
     """
 
     try:
