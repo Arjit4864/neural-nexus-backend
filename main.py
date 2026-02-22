@@ -126,7 +126,7 @@ async def auth_via_google(request: Request, db: Session = Depends(get_session)):
         db.add(db_user)
         db.commit()
         request.session['user'] = dict(user_info)
-    return RedirectResponse(url='https://neural-nexus-frontend-fl2o.vercel.app/dashboard')
+    return RedirectResponse(url='http://localhost:3000/dashboard')
 
 @app.post("/sync-emails")
 async def sync_emails(request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_session)):
