@@ -102,7 +102,7 @@ def on_startup():
 
 @app.get("/auth/google/login")
 async def login_via_google(request: Request):
-    redirect_uri = 'http://localhost:8000/auth/google/callback'
+    redirect_uri = 'https://neural-nexus-backend-4qh8.onrender.com/auth/google/callback'
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @app.get("/auth/google/callback")
@@ -126,7 +126,7 @@ async def auth_via_google(request: Request, db: Session = Depends(get_session)):
         db.add(db_user)
         db.commit()
         request.session['user'] = dict(user_info)
-    return RedirectResponse(url='http://localhost:3000/dashboard')
+    return RedirectResponse(url='https://neural-nexus-frontend-fl2o.vercel.app/dashboard')
 
 @app.post("/sync-emails")
 async def sync_emails(request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_session)):
