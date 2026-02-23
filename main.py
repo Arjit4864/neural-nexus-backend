@@ -12,7 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth
 from sqlmodel import Session, select
 from pydantic import BaseModel
-
+from fastapi import FastAPI, Depends, Request, HTTPException
 import google.generativeai as genai
 
 from database import User, get_session, create_db_and_tables, encrypt_data
@@ -138,7 +138,7 @@ async def sync_emails(request: Request, background_tasks: BackgroundTasks, db: S
 @app.get("/interviews")
 async def get_interviews(request: Request, db: Session = Depends(get_session)):
     user_info = request.session.get('user')
-    if not user_info: return {"error": "User not authenticated"}, 401
+    if not user_info: raise HTTPException(status_code=401, detail="User not authenticated")
     user = db.exec(select(User).where(User.email == user_info['email'])).first()
     return user.interviews if user else []
 
