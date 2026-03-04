@@ -23,7 +23,7 @@ def start_email_sync(user_email: str, db: Session):
     access_token = decrypt_data(user.encrypted_access_token)
     headers = {"Authorization": f"Bearer {access_token}"}
     
-    search_query = "subject:(interview) newer_than:14d"
+    search_query = "(subject:interview OR subject:screening OR subject:scheduling) newer_than:30d"
     params = {"q": search_query, "maxResults": 5}
     
     try:
