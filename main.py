@@ -179,3 +179,34 @@ async def analyze_answer(request: AnswerAnalysisRequest):
     except Exception as e:
         print(f"!!! ERROR in analyze_answer: {e}") 
         return {"error": f"Failed to get AI feedback: {e}"}, 500
+
+class QuestionGenerationRequest(BaseModel):
+    company: str | None = None
+    role: str | None = None
+    interview_type: str | None = None
+
+@app.post("/interviews/generate-question")
+async def generate_question(request: QuestionGenerationRequest):
+    print(f"\n--- Endpoint Hit: generate_question ---")
+    
+    # Default fallback values if the user came from the standard "Start Mock Interview" button
+    company = request.company if request.company and request.company != "Unknown" else "a top-tier technology company"
+    role = request.role if request.role and request.role != "Unknown" else "software engineering"
+    interview_type = request.interview_type if request.interview_type and request.interview_type != "Unknown" else "general"
+
+    prompt = f"""
+    You are an expert technical interviewer at {company}.
+    You are interviewing a candidate for a {role} position. 
+    This is a {interview_type} round.
+
+    Generate EXACTLY ONE challenging, highly specific interview question tailored to this role and interview type.
+    Do not provide any greetings, explanations, or context. Only return the question itself.
+    """
+
+    try:
+        response = feedback_model.generate_content(prompt) 
+        question = response.text.strip()
+        return {"question": question}
+    except Exception as e:
+        print(f"!!! ERROR in generate_question: {e}") 
+        return {"error": f"Failed to generate AI question: {e}"}, 500
