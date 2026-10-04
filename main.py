@@ -189,7 +189,6 @@ class QuestionGenerationRequest(BaseModel):
 async def generate_question(request: QuestionGenerationRequest):
     print(f"\n--- Endpoint Hit: generate_question ---")
     
-    # Default fallback values if the user came from the standard "Start Mock Interview" button
     company = request.company if request.company and request.company != "Unknown" else "a top-tier technology company"
     role = request.role if request.role and request.role != "Unknown" else "software engineering"
     interview_type = request.interview_type if request.interview_type and request.interview_type != "Unknown" else "general"
@@ -199,14 +198,33 @@ async def generate_question(request: QuestionGenerationRequest):
     You are interviewing a candidate for a {role} position. 
     This is a {interview_type} round.
 
-    Generate EXACTLY ONE challenging, highly specific interview question tailored to this role and interview type.
-    Do not provide any greetings, explanations, or context. Only return the question itself.
+    Generate EXACTLY 5 challenging, highly specific interview questions tailored to this role and interview type.
+    Return ONLY a valid JSON array of 5 strings. Do not include any markdown formatting like ```json.
+    
+    Example format:
+    [
+        "First specific question?",
+        "Second specific question?",
+        "Third specific question?",
+        "Fourth specific question?",
+        "Fifth specific question?"
+    ]
     """
 
     try:
         response = feedback_model.generate_content(prompt) 
-        question = response.text.strip()
-        return {"question": question}
+        text = response.text.strip()
+        
+        # Clean up potential markdown formatting from Gemini
+        if text.startswith("```json"):
+            text = text[7:]
+        elif text.startswith("```"):
+            text = text[3:]
+        if text.endswith("```"):
+            text = text[:-3]
+            
+        questions = json.loads(text.strip())
+        return {"questions": questions}
     except Exception as e:
         print(f"!!! ERROR in generate_question: {e}") 
-        return {"error": f"Failed to generate AI question: {e}"}, 500
+        return {"error": f"Failed to generate AI questions: {e}"}, 500
